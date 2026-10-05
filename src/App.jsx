@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Header from './components/Header'
 import MealList from './components/MealList'
 import MealDetail from './components/MealDetail'
 import StatusView from './components/StatusView'
+import SearchBar from './components/SearchBar'
 
 export default function App() {
   const [meals, setMeals] = useState([])
@@ -10,6 +11,10 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [retryKey, setRetryKey] = useState(0)
+
+  // מצבי חיפוש וסינון
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('ALL')
 
   useEffect(() => {
     let isMounted = true
@@ -54,6 +59,32 @@ export default function App() {
     }
   }, [retryKey])
 
+  // חילוץ רשימת הקטגוריות הייחודיות מתוך המנות
+  const categories = useMemo(() => {
+    const categorySet = new Set()
+    meals.forEach((meal) => {
+      if (meal.strCategory && meal.strCategory.trim()) {
+        categorySet.add(meal.strCategory.trim())
+      }
+    })
+    return Array.from(categorySet).sort()
+  }, [meals])
+
+  // סינון המנות לפי מילת חיפוש וקטגוריה
+  const filteredMeals = useMemo(() => {
+    return meals.filter((meal) => {
+      const query = searchTerm.toLowerCase().trim()
+      const matchesSearch = query
+        ? meal.strMeal && meal.strMeal.toLowerCase().includes(query)
+        : true
+
+      const matchesCategory =
+        selectedCategory === 'ALL' || meal.strCategory === selectedCategory
+
+      return matchesSearch && matchesCategory
+    })
+  }, [meals, searchTerm, selectedCategory])
+
   const handleSelectMeal = (meal) => {
     setSelectedMeal(meal)
   }
@@ -64,6 +95,11 @@ export default function App() {
 
   const handleRetry = () => {
     setRetryKey((prev) => prev + 1)
+  }
+
+  const handleResetFilters = () => {
+    setSearchTerm('')
+    setSelectedCategory('ALL')
   }
 
   return (
@@ -77,23 +113,34 @@ export default function App() {
         />
 
         {!loading && !error && (
-          <div className="master-detail-layout">
-            <section className="list-column">
-              <h2 className="section-title">מתכונים זמינים ({meals.length})</h2>
-              <MealList
-                meals={meals}
-                selectedMeal={selectedMeal}
-                onSelectMeal={handleSelectMeal}
-              />
-            </section>
+          <>
+            <SearchBar
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              selectedCategory={selectedCategory}
+              onCategoryChange={setSelectedCategory}
+              categories={categories}
+              totalResults={filteredMeals.length}
+              onReset={handleResetFilters}
+            />
 
-            <section className="detail-column">
-              <MealDetail
-                meal={selectedMeal}
-                onClose={selectedMeal ? handleCloseDetail : null}
-              />
-            </section>
-          </div>
+            <div className="master-detail-layout">
+              <section className="list-column">
+                <MealList
+                  meals={filteredMeals}
+                  selectedMeal={selectedMeal}
+                  onSelectMeal={handleSelectMeal}
+                />
+              </section>
+
+              <section className="detail-column">
+                <MealDetail
+                  meal={selectedMeal}
+                  onClose={selectedMeal ? handleCloseDetail : null}
+                />
+              </section>
+            </div>
+          </>
         )}
       </main>
     </div>
