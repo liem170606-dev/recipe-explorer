@@ -11,12 +11,14 @@ export default function MealCard({ meal, isSelected, onSelectMeal }) {
         }
       }}
     >
-      <img
-        src={meal.strMealThumb}
-        alt={meal.strMeal}
-        className="meal-card-image"
-        loading="lazy"
-      />
+      <div className="meal-card-image-wrapper">
+        <img
+          src={meal.strMealThumb}
+          alt={meal.strMeal}
+          className="meal-card-image"
+          loading="lazy"
+        />
+      </div>
       <div className="meal-card-content">
         <h3 className="meal-card-title">{meal.strMeal}</h3>
         <div className="meal-card-tags">
@@ -31,4 +33,3 @@ export default function MealCard({ meal, isSelected, onSelectMeal }) {
     </article>
   )
 }
-
