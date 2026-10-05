@@ -5,6 +5,8 @@ import MealDetail from './components/MealDetail'
 import StatusView from './components/StatusView'
 import SearchBar from './components/SearchBar'
 
+const FAVORITES_STORAGE_KEY = 'recipe_explorer_favorites'
+
 export default function App() {
   const [meals, setMeals] = useState([])
   const [selectedMeal, setSelectedMeal] = useState(null)
@@ -15,7 +17,28 @@ export default function App() {
   // מצבי חיפוש וסינון
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('ALL')
+  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false)
 
+  // טעינת מועדפים מ-localStorage (בונוס)
+  const [favorites, setFavorites] = useState(() => {
+    try {
+      const stored = localStorage.getItem(FAVORITES_STORAGE_KEY)
+      return stored ? JSON.parse(stored) : []
+    } catch {
+      return []
+    }
+  })
+
+  // שמירה אוטומטית ב-localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites))
+    } catch (err) {
+      console.error('Failed to save favorites to localStorage:', err)
+    }
+  }, [favorites])
+
+  // משיכת נתונים מ-TheMealDB
   useEffect(() => {
     let isMounted = true
 
@@ -59,7 +82,7 @@ export default function App() {
     }
   }, [retryKey])
 
-  // חילוץ רשימת הקטגוריות הייחודיות מתוך המנות
+  // חילוץ רשימת הקטגוריות הייחודיות
   const categories = useMemo(() => {
     const categorySet = new Set()
     meals.forEach((meal) => {
@@ -70,7 +93,7 @@ export default function App() {
     return Array.from(categorySet).sort()
   }, [meals])
 
-  // סינון המנות לפי מילת חיפוש וקטגוריה
+  // סינון המנות לפי חיפוש, קטגוריה ומועדפים
   const filteredMeals = useMemo(() => {
     return meals.filter((meal) => {
       const query = searchTerm.toLowerCase().trim()
@@ -81,9 +104,12 @@ export default function App() {
       const matchesCategory =
         selectedCategory === 'ALL' || meal.strCategory === selectedCategory
 
-      return matchesSearch && matchesCategory
+      const matchesFavorites =
+        !showOnlyFavorites || favorites.includes(meal.idMeal)
+
+      return matchesSearch && matchesCategory && matchesFavorites
     })
-  }, [meals, searchTerm, selectedCategory])
+  }, [meals, searchTerm, selectedCategory, showOnlyFavorites, favorites])
 
   const handleSelectMeal = (meal) => {
     setSelectedMeal(meal)
@@ -100,6 +126,21 @@ export default function App() {
   const handleResetFilters = () => {
     setSearchTerm('')
     setSelectedCategory('ALL')
+    setShowOnlyFavorites(false)
+  }
+
+  const handleToggleFavorite = (mealId) => {
+    setFavorites((prevFavorites) => {
+      if (prevFavorites.includes(mealId)) {
+        return prevFavorites.filter((id) => id !== mealId)
+      } else {
+        return [...prevFavorites, mealId]
+      }
+    })
+  }
+
+  const handleToggleShowOnlyFavorites = () => {
+    setShowOnlyFavorites((prev) => !prev)
   }
 
   return (
@@ -122,6 +163,9 @@ export default function App() {
               categories={categories}
               totalResults={filteredMeals.length}
               onReset={handleResetFilters}
+              showOnlyFavorites={showOnlyFavorites}
+              onToggleShowOnlyFavorites={handleToggleShowOnlyFavorites}
+              favoritesCount={favorites.length}
             />
 
             <div className="master-detail-layout">
@@ -130,6 +174,8 @@ export default function App() {
                   meals={filteredMeals}
                   selectedMeal={selectedMeal}
                   onSelectMeal={handleSelectMeal}
+                  favorites={favorites}
+                  onToggleFavorite={handleToggleFavorite}
                 />
               </section>
 
@@ -137,6 +183,8 @@ export default function App() {
                 <MealDetail
                   meal={selectedMeal}
                   onClose={selectedMeal ? handleCloseDetail : null}
+                  isFavorite={selectedMeal ? favorites.includes(selectedMeal.idMeal) : false}
+                  onToggleFavorite={handleToggleFavorite}
                 />
               </section>
             </div>

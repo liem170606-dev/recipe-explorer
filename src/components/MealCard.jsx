@@ -1,4 +1,10 @@
-export default function MealCard({ meal, isSelected, onSelectMeal }) {
+export default function MealCard({
+  meal,
+  isSelected,
+  onSelectMeal,
+  isFavorite,
+  onToggleFavorite,
+}) {
   return (
     <article
       className={`meal-card ${isSelected ? 'selected' : ''}`}
@@ -18,6 +24,20 @@ export default function MealCard({ meal, isSelected, onSelectMeal }) {
           className="meal-card-image"
           loading="lazy"
         />
+        {onToggleFavorite && (
+          <button
+            type="button"
+            className={`favorite-btn ${isFavorite ? 'favorited' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation()
+              onToggleFavorite(meal.idMeal)
+            }}
+            aria-label={isFavorite ? 'הסר ממועדפים' : 'הוסף למועדפים'}
+            title={isFavorite ? 'הסר ממועדפים' : 'הוסף למועדפים'}
+          >
+            {isFavorite ? '★' : '☆'}
+          </button>
+        )}
       </div>
       <div className="meal-card-content">
         <h3 className="meal-card-title">{meal.strMeal}</h3>

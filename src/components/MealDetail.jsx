@@ -1,4 +1,9 @@
-export default function MealDetail({ meal, onClose }) {
+export default function MealDetail({
+  meal,
+  onClose,
+  isFavorite,
+  onToggleFavorite,
+}) {
   if (!meal) {
     return (
       <aside className="meal-detail-panel empty-selection" aria-label="פרטי מתכון">
@@ -52,11 +57,22 @@ export default function MealDetail({ meal, onClose }) {
         )}
       </div>
 
-      <img
-        src={meal.strMealThumb}
-        alt={meal.strMeal}
-        className="detail-image"
-      />
+      <div className="detail-image-container">
+        <img
+          src={meal.strMealThumb}
+          alt={meal.strMeal}
+          className="detail-image"
+        />
+        {onToggleFavorite && (
+          <button
+            type="button"
+            className={`detail-favorite-btn ${isFavorite ? 'favorited' : ''}`}
+            onClick={() => onToggleFavorite(meal.idMeal)}
+          >
+            {isFavorite ? '★ שמור במועדפים' : '☆ הוסף למועדפים'}
+          </button>
+        )}
+      </div>
 
       <div className="detail-section">
         <h3>מצרכים ({ingredients.length})</h3>
@@ -103,4 +119,3 @@ export default function MealDetail({ meal, onClose }) {
     </aside>
   )
 }
-

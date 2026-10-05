@@ -6,8 +6,14 @@ export default function SearchBar({
   categories,
   totalResults,
   onReset,
+  showOnlyFavorites,
+  onToggleShowOnlyFavorites,
+  favoritesCount,
 }) {
-  const hasActiveFilters = searchTerm.trim().length > 0 || selectedCategory !== 'ALL'
+  const hasActiveFilters =
+    searchTerm.trim().length > 0 ||
+    selectedCategory !== 'ALL' ||
+    showOnlyFavorites
 
   return (
     <section className="search-filter-section" aria-label="חיפוש וסינון מתכונים">
@@ -56,6 +62,17 @@ export default function SearchBar({
           </select>
         </div>
 
+        {/* כפתור סינון מועדפים */}
+        <button
+          type="button"
+          className={`favorites-filter-btn ${showOnlyFavorites ? 'active' : ''}`}
+          onClick={onToggleShowOnlyFavorites}
+          aria-pressed={showOnlyFavorites}
+          title="הצג רק מתכונים שסומנו כמועדפים"
+        >
+          ★ מועדפים ({favoritesCount})
+        </button>
+
         {/* כפתור איפוס סינונים */}
         {hasActiveFilters && (
           <button
@@ -71,9 +88,9 @@ export default function SearchBar({
 
       {/* תצוגת מספר תוצאות */}
       <div className="results-count" aria-live="polite">
-        נמצאו <strong>{totalResults}</strong> מתכונים
+        {showOnlyFavorites ? 'מציג מתכונים מועדפים: ' : 'נמצאו '}
+        <strong>{totalResults}</strong> מתכונים
       </div>
     </section>
   )
 }
-

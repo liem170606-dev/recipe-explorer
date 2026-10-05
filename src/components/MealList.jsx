@@ -1,10 +1,16 @@
 import MealCard from './MealCard'
 
-export default function MealList({ meals, selectedMeal, onSelectMeal }) {
+export default function MealList({
+  meals,
+  selectedMeal,
+  onSelectMeal,
+  favorites = [],
+  onToggleFavorite,
+}) {
   if (!meals || meals.length === 0) {
     return (
       <div className="empty-list-message">
-        <p>לא נמצאו מתכונים להצגה.</p>
+        <p>לא נמצאו מתכונים התואמים לחיפוש או לסינון שנבחרו.</p>
       </div>
     )
   }
@@ -17,9 +23,10 @@ export default function MealList({ meals, selectedMeal, onSelectMeal }) {
           meal={meal}
           isSelected={selectedMeal?.idMeal === meal.idMeal}
           onSelectMeal={onSelectMeal}
+          isFavorite={favorites.includes(meal.idMeal)}
+          onToggleFavorite={onToggleFavorite}
         />
       ))}
     </section>
   )
 }
-
