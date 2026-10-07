@@ -1,3 +1,9 @@
+import {
+  translateMealTitle,
+  translateCategory,
+  translateArea,
+} from '../utils/translations'
+
 export default function MealCard({
   meal,
   isSelected,
@@ -5,6 +11,8 @@ export default function MealCard({
   isFavorite,
   onToggleFavorite,
 }) {
+  const titleInfo = translateMealTitle(meal.strMeal)
+
   return (
     <article
       className={`meal-card ${isSelected ? 'selected' : ''}`}
@@ -20,7 +28,7 @@ export default function MealCard({
       <div className="meal-card-image-wrapper">
         <img
           src={meal.strMealThumb}
-          alt={meal.strMeal}
+          alt={titleInfo.he}
           className="meal-card-image"
           loading="lazy"
         />
@@ -40,13 +48,20 @@ export default function MealCard({
         )}
       </div>
       <div className="meal-card-content">
-        <h3 className="meal-card-title">{meal.strMeal}</h3>
+        <h3 className="meal-card-title">{titleInfo.he}</h3>
+        {titleInfo.en && titleInfo.en !== titleInfo.he && (
+          <span className="meal-card-en-title">{titleInfo.en}</span>
+        )}
         <div className="meal-card-tags">
           {meal.strCategory && (
-            <span className="tag category-tag">{meal.strCategory}</span>
+            <span className="tag category-tag">
+              {translateCategory(meal.strCategory)}
+            </span>
           )}
           {meal.strArea && (
-            <span className="tag area-tag">{meal.strArea}</span>
+            <span className="tag area-tag">
+              מטבח {translateArea(meal.strArea)}
+            </span>
           )}
         </div>
       </div>

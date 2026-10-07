@@ -334,11 +334,21 @@ body {
 }
 
 .meal-card-title {
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.4rem 0;
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--text-main);
   line-height: 1.4;
+}
+
+.meal-card-en-title {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+  direction: ltr;
+  text-align: right;
+  display: block;
 }
 
 .meal-card-tags {
@@ -424,10 +434,19 @@ body {
 }
 
 .detail-title {
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.25rem 0;
   font-size: 1.4rem;
   font-weight: 800;
   color: var(--text-main);
+}
+
+.detail-en-subtitle {
+  margin: 0 0 0.65rem 0;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  direction: ltr;
+  text-align: right;
 }
 
 .detail-tags {
@@ -532,8 +551,19 @@ body {
 }
 
 .ingredient-name {
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.ingredient-en {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  font-weight: 400;
+  direction: ltr;
 }
 
 .ingredient-measure {
@@ -547,6 +577,21 @@ body {
   font-size: 0.95rem;
   color: #374151;
   line-height: 1.7;
+}
+
+.instructions-steps-list {
+  padding-right: 1.25rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.instruction-step {
+  font-size: 0.95rem;
+  color: #374151;
+  line-height: 1.65;
+  padding-right: 0.25rem;
 }
 
 .instructions-text p {

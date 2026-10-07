@@ -4,6 +4,7 @@ import MealList from './components/MealList'
 import MealDetail from './components/MealDetail'
 import StatusView from './components/StatusView'
 import SearchBar from './components/SearchBar'
+import { translateMealTitle } from './utils/translations'
 
 const FAVORITES_STORAGE_KEY = 'recipe_explorer_favorites'
 
@@ -93,12 +94,15 @@ export default function App() {
     return Array.from(categorySet).sort()
   }, [meals])
 
-  // סינון המנות לפי חיפוש, קטגוריה ומועדפים
+  // סינון המנות לפי חיפוש דו-לשוני (עברית ואנגלית), קטגוריה ומועדפים
   const filteredMeals = useMemo(() => {
     return meals.filter((meal) => {
       const query = searchTerm.toLowerCase().trim()
+      const titleInfo = translateMealTitle(meal.strMeal)
       const matchesSearch = query
-        ? meal.strMeal && meal.strMeal.toLowerCase().includes(query)
+        ? (meal.strMeal && meal.strMeal.toLowerCase().includes(query)) ||
+          (titleInfo.he && titleInfo.he.toLowerCase().includes(query)) ||
+          (titleInfo.en && titleInfo.en.toLowerCase().includes(query))
         : true
 
       const matchesCategory =

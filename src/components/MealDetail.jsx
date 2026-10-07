@@ -1,3 +1,12 @@
+import {
+  translateMealTitle,
+  translateCategory,
+  translateArea,
+  translateIngredient,
+  translateMeasure,
+  translateInstructions,
+} from '../utils/translations'
+
 export default function MealDetail({
   meal,
   onClose,
@@ -16,6 +25,9 @@ export default function MealDetail({
     )
   }
 
+  const titleInfo = translateMealTitle(meal.strMeal)
+  const instructions = translateInstructions(meal)
+
   // חילוץ רשימת המצרכים והכמויות מהשדות של TheMealDB (strIngredient1-20, strMeasure1-20)
   const ingredients = []
   for (let i = 1; i <= 20; i++) {
@@ -31,16 +43,23 @@ export default function MealDetail({
   }
 
   return (
-    <aside className="meal-detail-panel" aria-label={`פרטי ${meal.strMeal}`}>
+    <aside className="meal-detail-panel" aria-label={`פרטי ${titleInfo.he}`}>
       <div className="detail-header">
         <div>
-          <h2 className="detail-title">{meal.strMeal}</h2>
+          <h2 className="detail-title">{titleInfo.he}</h2>
+          {titleInfo.en && titleInfo.en !== titleInfo.he && (
+            <p className="detail-en-subtitle">{titleInfo.en}</p>
+          )}
           <div className="detail-tags">
             {meal.strCategory && (
-              <span className="tag category-tag">{meal.strCategory}</span>
+              <span className="tag category-tag">
+                {translateCategory(meal.strCategory)}
+              </span>
             )}
             {meal.strArea && (
-              <span className="tag area-tag">{meal.strArea}</span>
+              <span className="tag area-tag">
+                מטבח {translateArea(meal.strArea)}
+              </span>
             )}
           </div>
         </div>
@@ -60,7 +79,7 @@ export default function MealDetail({
       <div className="detail-image-container">
         <img
           src={meal.strMealThumb}
-          alt={meal.strMeal}
+          alt={titleInfo.he}
           className="detail-image"
         />
         {onToggleFavorite && (
@@ -75,13 +94,17 @@ export default function MealDetail({
       </div>
 
       <div className="detail-section">
-        <h3>מצרכים ({ingredients.length})</h3>
+        <h3>מצרכים נדרשים ({ingredients.length})</h3>
         <ul className="ingredients-list">
           {ingredients.map((item) => (
             <li key={item.id} className="ingredient-item">
-              <span className="ingredient-name">{item.name}</span>
+              <span className="ingredient-name">
+                {translateIngredient(item.name)}
+              </span>
               {item.measure && (
-                <span className="ingredient-measure">{item.measure}</span>
+                <span className="ingredient-measure">
+                  {translateMeasure(item.measure)}
+                </span>
               )}
             </li>
           ))}
@@ -91,13 +114,14 @@ export default function MealDetail({
       <div className="detail-section">
         <h3>הוראות הכנה</h3>
         <div className="instructions-text">
-          {meal.strInstructions ? (
-            meal.strInstructions
-              .split(/\r?\n/)
-              .filter((line) => line.trim().length > 0)
-              .map((paragraph, index) => (
-                <p key={index}>{paragraph}</p>
-              ))
+          {instructions && instructions.length > 0 ? (
+            <ol className="instructions-steps-list">
+              {instructions.map((step, index) => (
+                <li key={index} className="instruction-step">
+                  {step}
+                </li>
+              ))}
+            </ol>
           ) : (
             <p>אין הוראות הכנה זמינות למתכון זה.</p>
           )}

@@ -1,3 +1,5 @@
+import { translateCategory } from '../utils/translations'
+
 export default function SearchBar({
   searchTerm,
   onSearchChange,
@@ -18,13 +20,13 @@ export default function SearchBar({
   return (
     <section className="search-filter-section" aria-label="חיפוש וסינון מתכונים">
       <div className="search-filter-controls">
-        {/* שדה חיפוש טקסטואלי */}
+        {/* שדה חיפוש טקסטואלי חכם בעברית ובאנגלית */}
         <div className="search-input-wrapper">
           <span className="search-icon" aria-hidden="true">🔍</span>
           <input
             type="text"
             className="search-input"
-            placeholder="חיפוש מתכון לפי שם..."
+            placeholder="חיפוש מתכון (לדוגמה: חומוס, פלאפל, סושי, עוף)..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             aria-label="חיפוש מתכון לפי שם"
@@ -42,7 +44,7 @@ export default function SearchBar({
           )}
         </div>
 
-        {/* תפריט סינון לפי קטגוריה */}
+        {/* תפריט סינון לפי קטגוריה בעברית */}
         <div className="category-select-wrapper">
           <label htmlFor="category-select" className="visually-hidden">
             סינון לפי קטגוריה
@@ -56,7 +58,7 @@ export default function SearchBar({
             <option value="ALL">כל הקטגוריות</option>
             {categories.map((category) => (
               <option key={category} value={category}>
-                {category}
+                {translateCategory(category)}
               </option>
             ))}
           </select>
