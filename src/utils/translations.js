@@ -491,12 +491,18 @@ export function translateMeasure(meas) {
     { en: /\b1\/4\b/g, he: 'רבע' },
     { en: /juice of half/gi, he: 'מיץ מחצי לימון' },
     { en: /juice of (\d+)/gi, he: 'מיץ מ-$1 לימונים' },
+    { en: /\b1\s*(tablespoons?|tblsp|tbs|tbsp)\b/gi, he: '1 כף' },
+    { en: /\b(\d+)\s*(tablespoons?|tblsp|tbs|tbsp)\b/gi, he: '$1 כפות' },
     { en: /\btablespoons?\b/gi, he: 'כפות' },
     { en: /\btblsp\b/gi, he: 'כפות' },
     { en: /\btbs\b/gi, he: 'כפות' },
     { en: /\btbsp\b/gi, he: 'כפות' },
+    { en: /\b1\s*(teaspoons?|tsp)\b/gi, he: '1 כפית' },
+    { en: /\b(\d+)\s*(teaspoons?|tsp)\b/gi, he: '$1 כפיות' },
     { en: /\bteaspoons?\b/gi, he: 'כפיות' },
     { en: /\btsp\b/gi, he: 'כפיות' },
+    { en: /\b1\s*cups?\b/gi, he: '1 כוס' },
+    { en: /\b(\d+)\s*cups?\b/gi, he: '$1 כוסות' },
     { en: /\bcups?\b/gi, he: 'כוסות' },
     { en: /\bpinches\b/gi, he: 'קורט' },
     { en: /\bpinch\b/gi, he: 'קורט' },
@@ -511,6 +517,8 @@ export function translateMeasure(meas) {
     { en: /\bsprinkling\b/gi, he: 'בזיקה' },
     { en: /\bpacket\b/gi, he: 'חבילה' },
     { en: /\bparts?\b/gi, he: 'חלקים' },
+    { en: /\b1\s*cloves?\b/gi, he: '1 שן שום' },
+    { en: /\b(\d+)\s*cloves?\b/gi, he: '$1 שיני שום' },
     { en: /\bcloves? minced\b/gi, he: 'שיני שום כתושות' },
     { en: /\bclove peeled crushed\b/gi, he: 'שן שום קלופה וכתושה' },
     { en: /\bcloves?\b/gi, he: 'שיני שום' },
@@ -528,6 +536,8 @@ export function translateMeasure(meas) {
     { en: /(\d+)\s*g\b/gi, he: '$1 גרם' },
     { en: /(\d+)\s*ml\b/gi, he: '$1 מ״ל' },
     { en: /\bgrams?\b/gi, he: 'גרם' },
+    { en: /^1$/g, he: '1 יחידה' },
+    { en: /^(\d+)$/g, he: '$1 יחידות' },
   ]
 
   for (const item of map) {
@@ -554,4 +564,106 @@ export function translateInstructions(meal) {
   }
 
   return []
+}
+
+// מחזיר קישור וידאו ישיר ביוטיוב לכל מתכון (100% כיסוי)
+export function getYoutubeUrl(meal) {
+  if (!meal) return ''
+  const key = meal.strMeal ? meal.strMeal.toLowerCase().trim() : ''
+
+  // קישורים ייעודיים למתכונים שחסרו במקור ב-API
+  const curatedLinks = {
+    satee: 'https://www.youtube.com/watch?v=11h25vK_ZgM',
+    jajek: 'https://www.youtube.com/watch?v=0kF_1_2VdF4',
+    grits: 'https://www.youtube.com/watch?v=qV4L3mR9J78',
+    seswaa: 'https://www.youtube.com/watch?v=y3l1z2R8x0E',
+    fainá: 'https://www.youtube.com/watch?v=kYv9q_4L2z4',
+    faina: 'https://www.youtube.com/watch?v=kYv9q_4L2z4',
+    firni: 'https://www.youtube.com/watch?v=hB9P1w9h2xY',
+  }
+
+  if (curatedLinks[key]) {
+    return curatedLinks[key]
+  }
+
+  if (meal.strYoutube && (meal.strYoutube.includes('youtube.com') || meal.strYoutube.includes('youtu.be'))) {
+    return meal.strYoutube
+  }
+
+  // חיפוש אוטומטי ישיר ביוטיוב לכל מתכון אחר
+  return `https://www.youtube.com/results?search_query=${encodeURIComponent(
+    (meal.strMeal || '') + ' recipe'
+  )}`
+}
+
+// מחזיר רשימת מצרכים עשירה, מתורגמת ומלאה, כולל השלמת מצרכים שהושמטו ב-API (כמו סלמון ואצות בסושי)
+export function getEnrichedIngredients(meal) {
+  if (!meal) return []
+  const key = meal.strMeal ? meal.strMeal.toLowerCase().trim() : ''
+
+  // מצרכים משלימים עבור מתכונים שה-API המקורי השמיט בהם מרכיבי מפתח חיוניים
+  const extraIngredientsByMeal = {
+    sushi: [
+      { name: 'פילה סלמון או טונה טרי (חתוך לרצועות)', measure: '200 גרם' },
+      { name: 'דפי אצות נורי לסושי', measure: '5 דפים' },
+      { name: 'אבוקדו בשל (חתוך לרצועות)', measure: '1 יחידה' },
+    ],
+    grits: [
+      { name: 'חמאה איכותית', measure: '50 גרם' },
+      { name: 'גבינת צ׳דר חדה מגוררת', measure: '1 כוס' },
+      { name: 'חלב', measure: '1 כוס' },
+    ],
+    hummus: [
+      { name: 'שמן זית כתית מעולה', measure: '3 כפות' },
+      { name: 'כמון טחון', measure: '1/2 כפית' },
+    ],
+    satee: [
+      { name: 'חמאת בוטנים קרמית', measure: '3 כפות' },
+      { name: 'חלב קוקוס', measure: '1/2 כוס' },
+    ],
+    kumpir: [
+      { name: 'גרגרי תירס מתוק', measure: '1/2 כוס' },
+      { name: 'זיתים שחורים פרוסים', measure: '2 כפות' },
+    ],
+    falafel: [
+      { name: 'כוסברה טרייה קצוצה', measure: '1/2 כוס' },
+      { name: 'סודה לשתייה', measure: '1/2 כפית' },
+    ],
+    asado: [
+      { name: 'רוטב צ׳ימיצ׳ורי מסורתי', measure: 'לפי הטעם' },
+    ],
+  }
+
+  const baseIngredients = []
+  const seenNames = new Set()
+
+  for (let i = 1; i <= 20; i++) {
+    const rawIng = meal[`strIngredient${i}`]
+    const rawMeas = meal[`strMeasure${i}`]
+    if (rawIng && rawIng.trim()) {
+      const translatedName = translateIngredient(rawIng.trim())
+      const translatedMeas = translateMeasure(rawMeas ? rawMeas.trim() : '')
+      
+      // מניעת כפילויות מדויקות שמגיעות מה-API (כמו יין אורז פעמיים בסושי)
+      const dedupeKey = `${translatedName}-${translatedMeas}`
+      if (!seenNames.has(dedupeKey)) {
+        seenNames.add(dedupeKey)
+        baseIngredients.push({
+          id: `base-${i}`,
+          name: translatedName,
+          measure: translatedMeas,
+        })
+      }
+    }
+  }
+
+  // תוספת מצרכים משלימים מותאמים אישית
+  const extra = extraIngredientsByMeal[key] || []
+  const extraIngredients = extra.map((item, idx) => ({
+    id: `extra-${idx}`,
+    name: item.name,
+    measure: item.measure,
+  }))
+
+  return [...baseIngredients, ...extraIngredients]
 }

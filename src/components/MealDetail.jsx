@@ -2,9 +2,9 @@ import {
   translateMealTitle,
   translateCategory,
   translateArea,
-  translateIngredient,
-  translateMeasure,
   translateInstructions,
+  getYoutubeUrl,
+  getEnrichedIngredients,
 } from '../utils/translations'
 
 export default function MealDetail({
@@ -27,20 +27,8 @@ export default function MealDetail({
 
   const titleInfo = translateMealTitle(meal.strMeal)
   const instructions = translateInstructions(meal)
-
-  // חילוץ רשימת המצרכים והכמויות מהשדות של TheMealDB (strIngredient1-20, strMeasure1-20)
-  const ingredients = []
-  for (let i = 1; i <= 20; i++) {
-    const ingredient = meal[`strIngredient${i}`]
-    const measure = meal[`strMeasure${i}`]
-    if (ingredient && ingredient.trim()) {
-      ingredients.push({
-        id: i,
-        name: ingredient.trim(),
-        measure: measure ? measure.trim() : '',
-      })
-    }
-  }
+  const youtubeUrl = getYoutubeUrl(meal)
+  const ingredients = getEnrichedIngredients(meal)
 
   return (
     <aside className="meal-detail-panel" aria-label={`פרטי ${titleInfo.he}`}>
@@ -98,13 +86,9 @@ export default function MealDetail({
         <ul className="ingredients-list">
           {ingredients.map((item) => (
             <li key={item.id} className="ingredient-item">
-              <span className="ingredient-name">
-                {translateIngredient(item.name)}
-              </span>
+              <span className="ingredient-name">{item.name}</span>
               {item.measure && (
-                <span className="ingredient-measure">
-                  {translateMeasure(item.measure)}
-                </span>
+                <span className="ingredient-measure">{item.measure}</span>
               )}
             </li>
           ))}
@@ -128,10 +112,10 @@ export default function MealDetail({
         </div>
       </div>
 
-      {meal.strYoutube && (
+      {youtubeUrl && (
         <div className="detail-section">
           <a
-            href={meal.strYoutube}
+            href={youtubeUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="youtube-link-btn"
