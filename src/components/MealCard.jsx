@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import {
   translateMealTitle,
   translateCategory,
@@ -6,24 +7,16 @@ import {
 
 export default function MealCard({
   meal,
-  isSelected,
-  onSelectMeal,
   isFavorite,
   onToggleFavorite,
 }) {
   const titleInfo = translateMealTitle(meal.strMeal)
 
   return (
-    <article
-      className={`meal-card ${isSelected ? 'selected' : ''}`}
-      onClick={() => onSelectMeal(meal)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          onSelectMeal(meal)
-        }
-      }}
+    <Link
+      to={`/meals/${meal.idMeal}`}
+      className="meal-card"
+      title={`צפייה במתכון ${titleInfo.he}`}
     >
       <div className="meal-card-image-wrapper">
         <img
@@ -37,6 +30,7 @@ export default function MealCard({
             type="button"
             className={`favorite-btn ${isFavorite ? 'favorited' : ''}`}
             onClick={(e) => {
+              e.preventDefault()
               e.stopPropagation()
               onToggleFavorite(meal.idMeal)
             }}
@@ -65,6 +59,6 @@ export default function MealCard({
           )}
         </div>
       </div>
-    </article>
+    </Link>
   )
 }

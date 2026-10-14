@@ -2,15 +2,15 @@ import MealCard from './MealCard'
 
 export default function MealList({
   meals,
-  selectedMeal,
-  onSelectMeal,
   favorites = [],
   onToggleFavorite,
 }) {
   if (!meals || meals.length === 0) {
     return (
       <div className="empty-list-message">
-        <p>לא נמצאו מתכונים התואמים לחיפוש או לסינון שנבחרו.</p>
+        <span className="empty-list-icon">🔍</span>
+        <h3>לא נמצאו מתכונים</h3>
+        <p>נסו לשנות את מונח החיפוש או לבחור קטגוריה אחרת.</p>
       </div>
     )
   }
@@ -21,8 +21,6 @@ export default function MealList({
         <MealCard
           key={meal.idMeal}
           meal={meal}
-          isSelected={selectedMeal?.idMeal === meal.idMeal}
-          onSelectMeal={onSelectMeal}
           isFavorite={favorites.includes(meal.idMeal)}
           onToggleFavorite={onToggleFavorite}
         />

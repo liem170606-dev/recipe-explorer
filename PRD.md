@@ -3,28 +3,29 @@
 > עמוד אחד. בלי קוד. מגדיר את מהות האפליקציה, קהל היעד והתנהגות המערכת.
 
 ## 1. Pitch
-אפליקציית Web אינטראקטיבית במבנה Master-Detail לגילוי מתכונים מרחבי העולם, המאפשרת חיפוש, סינון וצפייה ברשימת מצרכים והוראות הכנה מפורטות.
+אפליקציית Web אינטראקטיבית מרובת-עמודים (React Router) לגילוי מתכונים מרחבי העולם, המאפשרת חיפוש, סינון וצפייה בדף מתכון ייעודי עם מצרכים והוראות הכנה מפורטות.
 
 ## 2. Who it is for
-בשלנים ביתיים, סטודנטים וכל מי שמחפש רעיונות והשראה לארוחה הבאה שלו בצורה מהירה ונוחה.
+בשלנים ביתיים, סטודנטים וכל מי שמחפש רעיונות והשראה לארוחה הבאה שלו בצורה מהירה, נגישה ונוחה.
 
-## 3. Screens
-- **List (רשימת מתכונים)** — כרטיסי מנות המציגים תמונת מנה, שם המתכון, קטגוריית המנה (עוף, פסטה, צמחוני וכו') וארץ מוצא.
-- **Details (פאנל פרטים)** — תצוגה מורחבת של המנה שנבחרה: תמונה גדולה, רשימת מצרכים וכמויות, הוראות הכנה צעד-אחר-צעד, וקישור לצפייה בסרטון YouTube.
+## 3. Screens (נתיבי ניווט עם React Router)
+- **Home (`/` — דף הבית)** — דף נחיתה והסבר על האפליקציה: יתרונות המערכת, כרטיסי מנות מומלצות, וכפתור כניסה מרכזי לקטלוג.
+- **Meals Catalog (`/meals` — קטלוג מתכונים)** — גריד מלא של כרטיסי מנות עם חיפוש דו-לשוני, סינון קטגוריות ופילטר מועדפים.
+- **Meal Details (`/meals/:id` — דף מתכון ייעודי)** — דף נפרד ועצמאי של המנה שנבחרה: תמונה גדולה, רשימת מצרכים וכמויות בעברית, שלבי הכנה ממוספרים, קישור ל-YouTube וכפתור חזרה לקטלוג.
 
 ## 4. Must-have features
-1. תצוגת גריד/רשימת מתכונים עשירה מבוססת TheMealDB API.
-2. פאנל Master-Detail המציג את פרטי המנה שנבחרה (ה-state נשמר ברכיב האב).
+1. ניתוב מלא באמצעות React Router עם 3 מסכים נפרדים וסרגל ניווט עליון קבוע (Navbar).
+2. משיכת נתונים חיה מ-TheMealDB API עם החלפה למנות אותנטיות (פיצה מרגריטה איטלקית).
 3. טיפול מלא בשלושה מצבי רשת: טעינה (Loading), שגיאה (Error) עם אפשרות ניסיון חוזר, ותצוגת מידע.
-4. שורת חיפוש טקסטואלית לפי שם המנה וסינון מהיר לפי קטגוריית מנות.
+4. שורת חיפוש טקסטואלית דו-לשונית (עברית/אנגלית) וסינון מהיר לפי קטגוריית מנות.
 5. שמירת מתכונים מועדפים ב-localStorage ופילטר ייעודי למועדפים.
 
 ## 5. Acceptance criteria
-- When I open the app, I see a list of meals with thumbnail images, names, and category tags.
-- When I click on a meal card, I see its full ingredients list, measurements, and cooking instructions in the detail panel.
-- When I type in the search bar or pick a category from the dropdown, I see only the matching meals in real time.
-- When the data is being fetched, I see a loading indicator; if the fetch fails, I see an error message and a retry button.
-- When I click the favorite star on a recipe, it stays marked as favorite even after refreshing the page.
+- When I open the app (`/`), I see a welcoming home screen with feature highlights and a CTA button to enter the recipes catalog.
+- When I navigate to `/meals`, I see a full grid of meals with search and filtering capabilities.
+- When I click on any meal card, I am routed to `/meals/:id` showing a dedicated full-page view with ingredients, steps, and video.
+- When I click the back button on a recipe page, I am taken back to the meals catalog.
+- When I toggle the favorite star on any recipe, it updates across the app and persists in `localStorage` across page refreshes.
 
 ## 6. Not now
 - יצירת מתכונים חדשים ע"י המשתמש ושמירתם בשרת.
