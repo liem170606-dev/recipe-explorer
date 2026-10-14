@@ -53,6 +53,15 @@
    npm run build
    ```
 
+5. **הרצת בדיקות אוטומטיות (Vitest — חובה לפי מחוון):**
+   ```bash
+   npm test
+   ```
+   או להרצה רציפה בזמן פיתוח:
+   ```bash
+   npm run test:watch
+   ```
+
 ---
 
 ## 🧱 פירוק לרכיבים (Component Architecture)
