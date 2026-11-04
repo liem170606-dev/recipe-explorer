@@ -15,7 +15,7 @@ describe('רכיב סרגל הניווט (Navbar)', () => {
     expect(screen.getByText('מתכונים נבחרים מכל העולם')).toBeInTheDocument()
   })
 
-  it('מכיל קישורי ניווט תקינים לדף הבית ולכל המתכונים', () => {
+  it('מכיל קישורי ניווט תקינים לדף הבית, כל המתכונים, מועדפים והפתעה', () => {
     render(
       <MemoryRouter>
         <Navbar favoriteCount={2} />
@@ -23,12 +23,16 @@ describe('רכיב סרגל הניווט (Navbar)', () => {
     )
 
     const homeLink = screen.getByRole('link', { name: /דף הבית/i })
-    expect(homeLink).toBeInTheDocument()
     expect(homeLink).toHaveAttribute('href', '/')
 
     const mealsLink = screen.getByRole('link', { name: /כל המתכונים/i })
-    expect(mealsLink).toBeInTheDocument()
     expect(mealsLink).toHaveAttribute('href', '/meals')
+
+    const favLink = screen.getByRole('link', { name: /המועדפים שלי/i })
+    expect(favLink).toHaveAttribute('href', '/favorites')
+
+    const discoverLink = screen.getByRole('link', { name: /הפתעה וסטטיסטיקות/i })
+    expect(discoverLink).toHaveAttribute('href', '/discover')
   })
 
   it('מציג את כמות המועדפים המעודכנת בתגית המועדפים', () => {

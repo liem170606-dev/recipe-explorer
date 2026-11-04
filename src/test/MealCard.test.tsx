@@ -45,3 +45,4 @@ describe('רכיב כרטיס מתכון (MealCard)', () => {
     expect(handleToggleFavorite).toHaveBeenCalledWith('53014')
   })
 })
+

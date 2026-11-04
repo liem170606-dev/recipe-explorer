@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import type { Meal } from '../types/meal'
 import {
   translateCategory,
   translateArea,
@@ -8,9 +9,11 @@ import {
   translateInstructions,
   getYoutubeUrl,
   getEnrichedIngredients,
+  filterMeals,
+  computeMealStats,
 } from '../utils/translations'
 
-describe('שכבת תרגום והעשרה (Translations Utils)', () => {
+describe('שכבת תרגום, סינון, סטטיסטיקות והעשרה (Translations & Logic Utils)', () => {
   it('מתרגם קטגוריות לעברית כהלכה', () => {
     expect(translateCategory('Dessert')).toBe('קינוחים')
     expect(translateCategory('Vegetarian')).toBe('צמחוני')
@@ -61,7 +64,7 @@ describe('שכבת תרגום והעשרה (Translations Utils)', () => {
   })
 
   it('מעשיר מצרכים חסרים (כגון סלמון/טונה, אצות נורי ואבוקדו בסושי)', () => {
-    const sushiMeal = {
+    const sushiMeal: Partial<Meal> = {
       strMeal: 'Sushi',
       strIngredient1: 'Sushi Rice',
       strMeasure1: '300g',
@@ -80,7 +83,64 @@ describe('שכבת תרגום והעשרה (Translations Utils)', () => {
     const pizzaUrl = getYoutubeUrl({ strMeal: 'Pizza Express Margherita' })
     expect(pizzaUrl).toContain('youtube.com')
 
-    const sushiUrl = getYoutubeUrl({ strMeal: 'Sushi', strYoutube: 'https://www.youtube.com/watch?v=sushi' })
+    const sushiUrl = getYoutubeUrl({
+      strMeal: 'Sushi',
+      strYoutube: 'https://www.youtube.com/watch?v=sushi',
+    })
     expect(sushiUrl).toContain('youtube.com')
+  })
+
+  it('מסנן מתכונים לפי טקסט חיפוש בעברית, קטגוריה ומועדפים (filterMeals)', () => {
+    const sampleMeals: Meal[] = [
+      {
+        idMeal: '53014',
+        strMeal: 'Pizza Express Margherita',
+        strCategory: 'Vegetarian',
+        strArea: 'Italian',
+      },
+      {
+        idMeal: '53065',
+        strMeal: 'Sushi',
+        strCategory: 'Seafood',
+        strArea: 'Japanese',
+      },
+      {
+        idMeal: '52785',
+        strMeal: 'Falafel',
+        strCategory: 'Vegetarian',
+        strArea: 'Egyptian',
+      },
+    ]
+
+    // סינון לפי שם בעברית
+    const byHebrewName = filterMeals(sampleMeals, 'פיצה', 'ALL', false, [])
+    expect(byHebrewName).toHaveLength(1)
+    expect(byHebrewName[0].idMeal).toBe('53014')
+
+    // סינון לפי קטגוריה
+    const byCategory = filterMeals(sampleMeals, '', 'Vegetarian', false, [])
+    expect(byCategory).toHaveLength(2)
+
+    // סינון לפי מועדפים בלבד
+    const onlyFavs = filterMeals(sampleMeals, '', 'ALL', true, ['53065'])
+    expect(onlyFavs).toHaveLength(1)
+    expect(onlyFavs[0].strMeal).toBe('Sushi')
+  })
+
+  it('מחשב סטטיסטיקות של קטגוריות ומטבחים בצורה מדויקת (computeMealStats)', () => {
+    const sampleMeals: Meal[] = [
+      { idMeal: '1', strMeal: 'Pizza', strCategory: 'Vegetarian', strArea: 'Italian' },
+      { idMeal: '2', strMeal: 'Lasagne', strCategory: 'Pasta', strArea: 'Italian' },
+      { idMeal: '3', strMeal: 'Falafel', strCategory: 'Vegetarian', strArea: 'Egyptian' },
+    ]
+
+    const stats = computeMealStats(sampleMeals)
+    expect(stats.totalMeals).toBe(3)
+    expect(stats.totalCategories).toBe(2)
+    expect(stats.totalAreas).toBe(2)
+    expect(stats.categoriesBreakdown[0].key).toBe('Vegetarian')
+    expect(stats.categoriesBreakdown[0].count).toBe(2)
+    expect(stats.areasBreakdown[0].key).toBe('Italian')
+    expect(stats.areasBreakdown[0].count).toBe(2)
   })
 })
