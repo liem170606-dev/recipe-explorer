@@ -1,8 +1,18 @@
 import { useState, useMemo } from 'react'
+import type { Meal } from '../types/meal'
 import SearchBar from './SearchBar'
 import MealList from './MealList'
 import StatusView from './StatusView'
-import { translateMealTitle } from '../utils/translations'
+import { filterMeals } from '../utils/translations'
+
+export interface MealsPageProps {
+  meals: Meal[]
+  loading: boolean
+  error: string | null
+  onRetry: () => void
+  favorites: string[]
+  onToggleFavorite: (mealId: string) => void
+}
 
 export default function MealsPage({
   meals = [],
@@ -11,14 +21,14 @@ export default function MealsPage({
   onRetry,
   favorites = [],
   onToggleFavorite,
-}) {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('ALL')
-  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false)
+}: MealsPageProps) {
+  const [searchTerm, setSearchTerm] = useState<string>('')
+  const [selectedCategory, setSelectedCategory] = useState<string>('ALL')
+  const [showOnlyFavorites, setShowOnlyFavorites] = useState<boolean>(false)
 
   // חילוץ רשימת הקטגוריות
-  const categories = useMemo(() => {
-    const categorySet = new Set()
+  const categories = useMemo<string[]>(() => {
+    const categorySet = new Set<string>()
     meals.forEach((meal) => {
       if (meal.strCategory && meal.strCategory.trim()) {
         categorySet.add(meal.strCategory.trim())
@@ -27,28 +37,15 @@ export default function MealsPage({
     return Array.from(categorySet).sort()
   }, [meals])
 
-  // סינון המנות
-  const filteredMeals = useMemo(() => {
-    return meals.filter((meal) => {
-      const query = searchTerm.toLowerCase().trim()
-      const titleInfo = translateMealTitle(meal.strMeal)
-
-      // חיפוש חופשי דו-לשוני
-      const matchesSearch =
-        !query ||
-        (meal.strMeal && meal.strMeal.toLowerCase().includes(query)) ||
-        (titleInfo.he && titleInfo.he.toLowerCase().includes(query)) ||
-        (meal.strCategory && meal.strCategory.toLowerCase().includes(query))
-
-      // סינון לפי קטגוריה
-      const matchesCategory =
-        selectedCategory === 'ALL' || meal.strCategory === selectedCategory
-
-      // סינון לפי מועדפים בלבד
-      const matchesFavorites = !showOnlyFavorites || favorites.includes(meal.idMeal)
-
-      return matchesSearch && matchesCategory && matchesFavorites
-    })
+  // סינון המנות באמצעות פונקציית העזר המשותפת
+  const filteredMeals = useMemo<Meal[]>(() => {
+    return filterMeals(
+      meals,
+      searchTerm,
+      selectedCategory,
+      showOnlyFavorites,
+      favorites
+    )
   }, [meals, searchTerm, selectedCategory, showOnlyFavorites, favorites])
 
   const handleResetFilters = () => {
@@ -79,10 +76,10 @@ export default function MealsPage({
         favoritesCount={favorites.length}
       />
 
-      {loading && <StatusView type="loading" />}
+      {loading && <StatusView loading={true} />}
 
       {error && !loading && (
-        <StatusView type="error" message={error} onRetry={onRetry} />
+        <StatusView loading={false} error={error} onRetry={onRetry} />
       )}
 
       {!loading && !error && (
@@ -95,4 +92,3 @@ export default function MealsPage({
     </div>
   )
 }
-

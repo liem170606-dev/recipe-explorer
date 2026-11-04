@@ -1,5 +1,7 @@
+import type { Meal, TranslatedTitle, EnrichedIngredient, MealStatsSummary } from '../types/meal'
+
 // מילון תרגומים לקטגוריות
-const categoryTranslations = {
+const categoryTranslations: Record<string, string> = {
   Dessert: 'קינוחים',
   Vegetarian: 'צמחוני',
   Chicken: 'עוף',
@@ -17,7 +19,7 @@ const categoryTranslations = {
 }
 
 // מילון תרגומים לארצות ומטבחים
-const areaTranslations = {
+const areaTranslations: Record<string, string> = {
   Turkish: 'טורקי',
   Japanese: 'יפני',
   Italian: 'איטלקי',
@@ -48,7 +50,7 @@ const areaTranslations = {
 }
 
 // מילון תרגומים לשמות המתכונים
-const mealTranslations = {
+const mealTranslations: Record<string, TranslatedTitle> = {
   falafel: { he: 'פלאפל ביתי אסלי', en: 'Falafel' },
   hummus: { he: 'חומוס מסורתי עם טחינה', en: 'Hummus' },
   sushi: { he: 'סושי רול קלאסי', en: 'Sushi' },
@@ -80,7 +82,7 @@ const mealTranslations = {
 }
 
 // הוראות הכנה מלאות ומפורטות בעברית לכל המנות
-const mealInstructionsTranslations = {
+const mealInstructionsTranslations: Record<string, string[]> = {
   falafel: [
     'משרים את גרגרי החומוס בקערת מים גדולה למשך לילה שלם (12-14 שעות), ומסננים היטב.',
     'טוחנים במעבד מזון את החומוס, הבצל, השום, הכוסברה, הפטרוזיליה והתבלינים (כמון, פלפל, מלח) עד לקבלת תערובת אחידה אך בעלת מרקם גרגרי מעט.',
@@ -334,7 +336,7 @@ const mealInstructionsTranslations = {
 }
 
 // מילון מצרכים מלא ומקיף לכל המנות ב-API
-const ingredientTranslations = {
+const ingredientTranslations: Record<string, string> = {
   almonds: 'שקדים',
   'baking powder': 'אבקת אפייה',
   basil: 'עלי בזיליקום טריים',
@@ -485,17 +487,17 @@ const ingredientTranslations = {
   yeast: 'שמרים',
 }
 
-export function translateCategory(cat) {
+export function translateCategory(cat?: string): string {
   if (!cat) return ''
   return categoryTranslations[cat] || cat
 }
 
-export function translateArea(area) {
+export function translateArea(area?: string): string {
   if (!area) return ''
   return areaTranslations[area] || area
 }
 
-export function translateMealTitle(mealName) {
+export function translateMealTitle(mealName?: string): TranslatedTitle {
   if (!mealName) return { he: '', en: '' }
   const key = mealName.toLowerCase().trim()
   if (mealTranslations[key]) {
@@ -504,17 +506,17 @@ export function translateMealTitle(mealName) {
   return { he: mealName, en: mealName }
 }
 
-export function translateIngredient(ing) {
+export function translateIngredient(ing?: string): string {
   if (!ing) return ''
   const key = ing.toLowerCase().trim()
   return ingredientTranslations[key] || ing
 }
 
-export function translateMeasure(meas) {
+export function translateMeasure(meas?: string): string {
   if (!meas) return ''
   let text = meas.trim()
 
-  const map = [
+  const map: Array<{ en: RegExp; he: string }> = [
     { en: /\b1 1\/2\b/g, he: '1 וחצי' },
     { en: /\b1 1\/4\b/g, he: '1 ורבע' },
     { en: /\b1\/2\b/g, he: 'חצי' },
@@ -579,7 +581,7 @@ export function translateMeasure(meas) {
   return text
 }
 
-export function translateInstructions(meal) {
+export function translateInstructions(meal?: Partial<Meal> | null): string[] {
   if (!meal) return []
   const key = meal.strMeal ? meal.strMeal.toLowerCase().trim() : ''
 
@@ -599,12 +601,12 @@ export function translateInstructions(meal) {
 }
 
 // מחזיר קישור וידאו ישיר ביוטיוב לכל מתכון (100% כיסוי)
-export function getYoutubeUrl(meal) {
+export function getYoutubeUrl(meal?: Partial<Meal> | null): string {
   if (!meal) return ''
   const key = meal.strMeal ? meal.strMeal.toLowerCase().trim() : ''
 
   // קישורים ייעודיים למתכונים שחסרו במקור ב-API
-  const curatedLinks = {
+  const curatedLinks: Record<string, string> = {
     satee: 'https://www.youtube.com/watch?v=11h25vK_ZgM',
     jajek: 'https://www.youtube.com/watch?v=0kF_1_2VdF4',
     grits: 'https://www.youtube.com/watch?v=qV4L3mR9J78',
@@ -631,12 +633,12 @@ export function getYoutubeUrl(meal) {
 }
 
 // מחזיר רשימת מצרכים עשירה, מתורגמת ומלאה, כולל השלמת מצרכים שהושמטו ב-API (כמו סלמון ואצות בסושי)
-export function getEnrichedIngredients(meal) {
+export function getEnrichedIngredients(meal?: Partial<Meal> | null): EnrichedIngredient[] {
   if (!meal) return []
   const key = meal.strMeal ? meal.strMeal.toLowerCase().trim() : ''
 
   // מצרכים משלימים עבור מתכונים שה-API המקורי השמיט בהם מרכיבי מפתח חיוניים
-  const extraIngredientsByMeal = {
+  const extraIngredientsByMeal: Record<string, Array<{ name: string; measure: string }>> = {
     sushi: [
       { name: 'פילה סלמון או טונה טרי (חתוך לרצועות)', measure: '200 גרם' },
       { name: 'דפי אצות נורי לסושי', measure: '5 דפים' },
@@ -668,12 +670,12 @@ export function getEnrichedIngredients(meal) {
     ],
   }
 
-  const baseIngredients = []
-  const seenNames = new Set()
+  const baseIngredients: EnrichedIngredient[] = []
+  const seenNames = new Set<string>()
 
   for (let i = 1; i <= 20; i++) {
-    const rawIng = meal[`strIngredient${i}`]
-    const rawMeas = meal[`strMeasure${i}`]
+    const rawIng = meal[`strIngredient${i}` as `strIngredient${number}`]
+    const rawMeas = meal[`strMeasure${i}` as `strMeasure${number}`]
     if (rawIng && rawIng.trim()) {
       const translatedName = translateIngredient(rawIng.trim())
       const translatedMeas = translateMeasure(rawMeas ? rawMeas.trim() : '')
@@ -693,7 +695,7 @@ export function getEnrichedIngredients(meal) {
 
   // תוספת מצרכים משלימים מותאמים אישית
   const extra = extraIngredientsByMeal[key] || []
-  const extraIngredients = extra.map((item, idx) => ({
+  const extraIngredients: EnrichedIngredient[] = extra.map((item, idx) => ({
     id: `extra-${idx}`,
     name: item.name,
     measure: item.measure,
@@ -701,3 +703,81 @@ export function getEnrichedIngredients(meal) {
 
   return [...baseIngredients, ...extraIngredients]
 }
+
+// פונקציית סינון מתכונים לפי טקסט חיפוש (עברית/אנגלית), קטגוריה ומועדפים
+export function filterMeals(
+  meals: Meal[],
+  searchTerm: string,
+  selectedCategory: string,
+  showOnlyFavorites: boolean,
+  favorites: string[]
+): Meal[] {
+  const query = searchTerm.toLowerCase().trim()
+
+  return meals.filter((meal) => {
+    const titleInfo = translateMealTitle(meal.strMeal)
+    const translatedCat = translateCategory(meal.strCategory)
+    const translatedArea = translateArea(meal.strArea)
+
+    const matchesSearch =
+      !query ||
+      (meal.strMeal && meal.strMeal.toLowerCase().includes(query)) ||
+      (titleInfo.he && titleInfo.he.toLowerCase().includes(query)) ||
+      (meal.strCategory && meal.strCategory.toLowerCase().includes(query)) ||
+      (translatedCat && translatedCat.toLowerCase().includes(query)) ||
+      (translatedArea && translatedArea.toLowerCase().includes(query))
+
+    const matchesCategory =
+      selectedCategory === 'ALL' || meal.strCategory === selectedCategory
+
+    const matchesFavorites =
+      !showOnlyFavorites || favorites.includes(meal.idMeal)
+
+    return Boolean(matchesSearch && matchesCategory && matchesFavorites)
+  })
+}
+
+// חישוב סטטיסטיקות מפורטות על מאגר המתכונים (קטגוריות ומטבחים)
+export function computeMealStats(meals: Meal[]): MealStatsSummary {
+  const totalMeals = meals.length
+  const categoryMap = new Map<string, number>()
+  const areaMap = new Map<string, number>()
+
+  meals.forEach((meal) => {
+    if (meal.strCategory && meal.strCategory.trim()) {
+      const cat = meal.strCategory.trim()
+      categoryMap.set(cat, (categoryMap.get(cat) || 0) + 1)
+    }
+    if (meal.strArea && meal.strArea.trim()) {
+      const area = meal.strArea.trim()
+      areaMap.set(area, (areaMap.get(area) || 0) + 1)
+    }
+  })
+
+  const categoriesBreakdown = Array.from(categoryMap.entries())
+    .map(([key, count]) => ({
+      key,
+      label: translateCategory(key),
+      count,
+      percentage: totalMeals > 0 ? Math.round((count / totalMeals) * 100) : 0,
+    }))
+    .sort((a, b) => b.count - a.count)
+
+  const areasBreakdown = Array.from(areaMap.entries())
+    .map(([key, count]) => ({
+      key,
+      label: translateArea(key),
+      count,
+      percentage: totalMeals > 0 ? Math.round((count / totalMeals) * 100) : 0,
+    }))
+    .sort((a, b) => b.count - a.count)
+
+  return {
+    totalMeals,
+    totalCategories: categoriesBreakdown.length,
+    totalAreas: areasBreakdown.length,
+    categoriesBreakdown,
+    areasBreakdown,
+  }
+}
+

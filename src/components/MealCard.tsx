@@ -1,15 +1,22 @@
 import { Link } from 'react-router-dom'
+import type { Meal } from '../types/meal'
 import {
   translateMealTitle,
   translateCategory,
   translateArea,
 } from '../utils/translations'
 
+export interface MealCardProps {
+  meal: Meal
+  isFavorite: boolean
+  onToggleFavorite?: (mealId: string) => void
+}
+
 export default function MealCard({
   meal,
   isFavorite,
   onToggleFavorite,
-}) {
+}: MealCardProps) {
   const titleInfo = translateMealTitle(meal.strMeal)
 
   return (

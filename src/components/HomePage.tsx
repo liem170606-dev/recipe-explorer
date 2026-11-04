@@ -1,7 +1,12 @@
 import { Link } from 'react-router-dom'
+import type { Meal } from '../types/meal'
 import { translateMealTitle, translateCategory, translateArea } from '../utils/translations'
 
-export default function HomePage({ meals = [] }) {
+export interface HomePageProps {
+  meals?: Meal[]
+}
+
+export default function HomePage({ meals = [] }: HomePageProps) {
   // בחירת 3 מתכונים בולטים לתצוגה מקדימה בדף הבית
   const featuredMeals = meals.filter((m) => {
     const key = (m.strMeal || '').toLowerCase()
@@ -32,6 +37,9 @@ export default function HomePage({ meals = [] }) {
           <div className="hero-buttons">
             <Link to="/meals" className="btn btn-primary btn-large">
               🍲 כניסה לכל המתכונים
+            </Link>
+            <Link to="/discover" className="btn btn-secondary btn-large">
+              🎲 הגרלת מתכון וסטטיסטיקות
             </Link>
           </div>
         </div>
@@ -153,4 +161,3 @@ export default function HomePage({ meals = [] }) {
     </div>
   )
 }
-

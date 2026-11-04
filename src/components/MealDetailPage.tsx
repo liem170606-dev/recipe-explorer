@@ -1,4 +1,5 @@
 import { useParams, Link } from 'react-router-dom'
+import type { Meal } from '../types/meal'
 import {
   translateMealTitle,
   translateCategory,
@@ -9,6 +10,15 @@ import {
 } from '../utils/translations'
 import StatusView from './StatusView'
 
+export interface MealDetailPageProps {
+  meals: Meal[]
+  loading: boolean
+  error: string | null
+  onRetry: () => void
+  favorites: string[]
+  onToggleFavorite: (mealId: string) => void
+}
+
 export default function MealDetailPage({
   meals = [],
   loading = false,
@@ -16,13 +26,13 @@ export default function MealDetailPage({
   onRetry,
   favorites = [],
   onToggleFavorite,
-}) {
-  const { id } = useParams()
+}: MealDetailPageProps) {
+  const { id } = useParams<{ id: string }>()
 
   if (loading) {
     return (
       <div className="meal-detail-page-container">
-        <StatusView type="loading" />
+        <StatusView loading={true} />
       </div>
     )
   }
@@ -30,7 +40,7 @@ export default function MealDetailPage({
   if (error) {
     return (
       <div className="meal-detail-page-container">
-        <StatusView type="error" message={error} onRetry={onRetry} />
+        <StatusView loading={false} error={error} onRetry={onRetry} />
       </div>
     )
   }
@@ -168,4 +178,3 @@ export default function MealDetailPage({
     </article>
   )
 }
-

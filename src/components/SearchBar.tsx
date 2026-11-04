@@ -1,5 +1,18 @@
 import { translateCategory } from '../utils/translations'
 
+export interface SearchBarProps {
+  searchTerm: string
+  onSearchChange: (value: string) => void
+  selectedCategory: string
+  onCategoryChange: (category: string) => void
+  categories: string[]
+  totalResults: number
+  onReset: () => void
+  showOnlyFavorites: boolean
+  onToggleShowOnlyFavorites: () => void
+  favoritesCount: number
+}
+
 export default function SearchBar({
   searchTerm,
   onSearchChange,
@@ -11,7 +24,7 @@ export default function SearchBar({
   showOnlyFavorites,
   onToggleShowOnlyFavorites,
   favoritesCount,
-}) {
+}: SearchBarProps) {
   const hasActiveFilters =
     searchTerm.trim().length > 0 ||
     selectedCategory !== 'ALL' ||

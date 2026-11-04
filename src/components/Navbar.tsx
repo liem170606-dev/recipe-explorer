@@ -1,6 +1,10 @@
 import { NavLink, Link } from 'react-router-dom'
 
-export default function Navbar({ favoriteCount }) {
+export interface NavbarProps {
+  favoriteCount: number
+}
+
+export default function Navbar({ favoriteCount }: NavbarProps) {
   return (
     <header className="navbar-container">
       <div className="navbar-content">
@@ -30,11 +34,27 @@ export default function Navbar({ favoriteCount }) {
           >
             🍲 כל המתכונים
           </NavLink>
+          <NavLink
+            to="/favorites"
+            className={({ isActive }) =>
+              `nav-link ${isActive ? 'nav-link-active' : ''}`
+            }
+          >
+            ⭐ המועדפים שלי
+          </NavLink>
+          <NavLink
+            to="/discover"
+            className={({ isActive }) =>
+              `nav-link ${isActive ? 'nav-link-active' : ''}`
+            }
+          >
+            🎲 הפתעה וסטטיסטיקות
+          </NavLink>
         </nav>
 
         <div className="navbar-actions">
           <Link
-            to="/meals"
+            to="/favorites"
             className="navbar-favorites-badge"
             title="צפייה במתכונים מועדפים"
           >
@@ -47,4 +67,3 @@ export default function Navbar({ favoriteCount }) {
     </header>
   )
 }
-

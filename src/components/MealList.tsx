@@ -1,10 +1,17 @@
+import type { Meal } from '../types/meal'
 import MealCard from './MealCard'
+
+export interface MealListProps {
+  meals: Meal[]
+  favorites?: string[]
+  onToggleFavorite?: (mealId: string) => void
+}
 
 export default function MealList({
   meals,
   favorites = [],
   onToggleFavorite,
-}) {
+}: MealListProps) {
   if (!meals || meals.length === 0) {
     return (
       <div className="empty-list-message">
